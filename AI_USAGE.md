@@ -40,8 +40,8 @@
 
 ## Resumen del proyecto
 
-**Nombre del proyecto: ia-dev-template
-**Estudiante/s: Juan Antonio Acosta Cardozo 
+**Nombre del proyecto:**
+**Estudiante/s:**
 
 ---
 
@@ -49,20 +49,20 @@
 
 ### Entrada 001
 
-| Campo                                                       | Detalle                                                                                                              |
-|-------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| **Fecha**                                                   | 2026-07-17                                                                                                           |
-| **Herramienta**                                             | Intellij / Claude chat                                                                                               |
-| **Contexto**                                                | Corrección de los AI Code Smells detectados por la clase  => tools/audit_code.py                                     |
-| **Prompt exacto (o resumen)                                 | Buenas,  ayudame a corregir el eval() peligroso reemplazandolo por un parser AST seguro, y despues adaptalo al patron |
-| validate()/safe_eval() que se ve en el material de la clase |
-| **Sugerencia de la IA**                                     | Le pedi que genere los codigos en forma correcta                                                                     |
-| **Decisión tomada**                                         | Acepte una vez hecha una verificación de ella                                                                        |
-| **Impacto en el código**                                    | Al volver a ejecutar tools/audit_code.py, ya no se detectaron las alertas de seguridad                               |
+| Campo | Detalle |
+|-------|---------|
+| **Fecha** | YYYY-MM-DD |
+| **Herramienta** | Cursor / Claude Code / Copilot / ChatGPT / Otro |
+| **Contexto** | ¿En qué parte del código estabas trabajando? (ej: "Escribiendo el endpoint POST /transactions") |
+| **Prompt exacto (o resumen)** | Copia el prompt que usaste, o un resumen fiel si fue muy largo |
+| **Sugerencia de la IA** | ¿Qué generó la IA? Incluye el fragmento de código relevante si es corto |
+| **Decisión tomada** | ¿Aceptaste? ¿Modificaste? ¿Rechazaste? ¿Por qué? |
+| **Impacto en el código** | Archivo(s) y función(es) afectadas |
 
 **Razonamiento en tus palabras:**
-Un laboratorio muy práctico que, con ejemplos simples, demuestra las situaciones más comunes que podemos encontrarnos durante el desarrollo de un programa: por desconocimiento de las buenas prácticas de programación, o por falta de experiencia, podemos terminar generando programas vulnerables y con un déficit en el correcto manejo de excepciones.
- 
+> Escribe aquí por qué la sugerencia era correcta (o incorrecta) desde tu perspectiva
+> como desarrollador. ¿Qué habrías hecho diferente sin la IA?
+
 ---
 
 ### Entrada 002
