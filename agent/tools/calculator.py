@@ -112,5 +112,5 @@ def calculate(expression: str) -> str:
         return "ERROR: division por cero"
     except SyntaxError:
         return "ERROR: expresion invalida"
-    except Exception as e:
+    except Exception as e: # noqa: BLE001
         return f"ERROR: {e}"

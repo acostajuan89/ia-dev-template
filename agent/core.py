@@ -17,7 +17,6 @@ import logging
 import os
 from typing import Any
 
-
 from agent.tools.calculator import calculate
 from agent.tools.merchant_lookup import lookup_merchant
 
