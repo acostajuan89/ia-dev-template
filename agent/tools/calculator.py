@@ -43,21 +43,36 @@ def validate(node: ast.AST) -> None:
     """
     Recorre el árbol y lanza ValueError si aparece cualquier nodo
     que no sea aritmética pura (Call, Name, Attribute, Import, etc.).
+
+    Nota: no se usa ast.iter_child_nodes() de forma genérica porque
+    tambien devuelve el nodo del operador (ast.Add, ast.Pow, etc.),
+    que no es un nodo de expresion valido por si solo — se valida
+    aparte contra las whitelists _ALLOWED_BINOPS/_ALLOWED_UNARYOPS.
     """
     if not isinstance(node, _ALLOWED_NODES):
         raise ValueError(f"Expresion no permitida: nodo {type(node).__name__}")
 
-    if isinstance(node, ast.Constant) and not isinstance(node.value, (int, float)):
-        raise ValueError(f"Constante no numerica no permitida: {node.value!r}")
+    if isinstance(node, ast.Expression):
+        validate(node.body)
+        return
 
-    if isinstance(node, ast.BinOp) and type(node.op) not in _ALLOWED_BINOPS:
-        raise ValueError(f"Operador no permitido: {type(node.op).__name__}")
+    if isinstance(node, ast.Constant):
+        if not isinstance(node.value, (int, float)):
+            raise ValueError(f"Constante no numerica no permitida: {node.value!r}")
+        return
 
-    if isinstance(node, ast.UnaryOp) and type(node.op) not in _ALLOWED_UNARYOPS:
-        raise ValueError(f"Operador unario no permitido: {type(node.op).__name__}")
+    if isinstance(node, ast.BinOp):
+        if type(node.op) not in _ALLOWED_BINOPS:
+            raise ValueError(f"Operador no permitido: {type(node.op).__name__}")
+        validate(node.left)
+        validate(node.right)
+        return
 
-    for child in ast.iter_child_nodes(node):
-        validate(child)
+    if isinstance(node, ast.UnaryOp):
+        if type(node.op) not in _ALLOWED_UNARYOPS:
+            raise ValueError(f"Operador unario no permitido: {type(node.op).__name__}")
+        validate(node.operand)
+        return
 
 
 def safe_eval(node: ast.AST) -> Any:
@@ -112,5 +127,5 @@ def calculate(expression: str) -> str:
         return "ERROR: division por cero"
     except SyntaxError:
         return "ERROR: expresion invalida"
-    except Exception as e: # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
         return f"ERROR: {e}"
