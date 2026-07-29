@@ -50,3 +50,4 @@ porque no estaba en el contexto inicial).
   contra el sistema de facturación?
 - ¿Qué patrón de integración usará la API que monitorea pagos
   (polling vs. evento)? — Pendiente de resolver en el ADR.
+
