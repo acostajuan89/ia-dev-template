@@ -79,3 +79,37 @@ ORDEN_CORTE, REGISTRO_CORTE, INGRESO_DEPOSITO y ORDEN_RECONEXION.
 - ¿El registro de corte debe diferenciar la persona específica de la
   cuadrilla, o alcanza con registrar la cuadrilla como equipo?
 - ¿El estado del medidor se modela como campo simple o como historial?
+
+## Entrada 3 — Diagrama de secuencia: registro de corte
+
+**Objetivo:** Modelar el flujo de registro de corte (efectivo / no
+efectivizado) como diagrama de secuencia, cubriendo las Historias 1 y 2
+del PRD.
+
+**Herramienta/modelo:** Claude (Anthropic).
+
+**Contexto proporcionado:** PRD.md auditado, con foco en las Historias
+1 y 2 (registro de corte efectivo y no efectivizado con motivo).
+
+**Salida obtenida:** Un diagrama de secuencia con actor Cuadrillero, la
+App Android, la API y la base de datos, con un flujo alternativo (`alt`)
+separando corte efectivo de no efectivizado.
+
+**Decisión humana clave:** Se evaluó si incluir en el diagrama la
+validación contra el sistema de facturación para el caso "el cliente
+paga en el momento y muestra comprobante" (uno de los motivos de
+no-corte). Se decidió **no incluir esa interacción**, porque el PRD la
+dejó explícitamente como pregunta abierta (Sección 5, Historia 2) —
+incluirla habría significado que la IA (o el autor) inventara un
+servicio externo y un contrato de API no confirmados.
+
+**Cambio realizado:** Se agregó explícitamente la validación de sesión/
+usuario autenticado antes de consultar la orden, en línea con el
+requisito no funcional de seguridad (usuario independiente por persona)
+que sí está confirmado en el PRD.
+
+**Evidencia / preguntas abiertas remanentes:**
+- ¿Existe validación de geolocalización antes de permitir el registro?
+- ¿La validación de "pago con comprobante en el momento" requiere una
+  llamada síncrona a facturación? — Pendiente de un segundo diagrama de
+  secuencia si se confirma esta necesidad.
