@@ -150,3 +150,56 @@ en vez de asumir que "no pasaría".
   Cloud Messaging, pendiente de implementar.
 - Sin mecanismo automatizado de respaldo ante fallos de notificación —
   riesgo aceptado para la v1, a revisar en el futuro.
+
+## Entrada 5 — Diagrama de secuencia: reconexión
+
+**Objetivo:** Modelar el flujo de reconexión, cubriendo las Historias 4
+y 5 del PRD y la decisión del ADR-0001 (detección de pagos vía polling
++ Firebase Cloud Messaging).
+
+**Herramienta/modelo:** Claude (Anthropic).
+
+**Contexto proporcionado:** PRD.md (Historias 4, 5, Sección 4 con la
+regla de "mismo día vs. depósito") y ADR-0001 ya aceptado.
+
+**Salida obtenida:** Un diagrama que integra el script de polling, la
+notificación FCM, y un flujo alternativo (`alt`) que separa el caso de
+pago el mismo día (medidor con la cuadrilla) del caso de medidor ya en
+depósito.
+
+**Problema detectado:** El diagrama no incluyó una validación explícita
+de sesión/autorización para el administrador de cuadrilla, a diferencia
+del diagrama de corte que sí la tiene — quedó marcado como pregunta
+abierta en vez de asumir que es igual sin confirmarlo.
+
+**Cambio realizado:** Se dejó documentado explícitamente en la sección
+de auditoría del diagrama que falta unificar ese criterio, en lugar de
+completar la omisión con una suposición.
+
+**Evidencia / preguntas abiertas remanentes:**
+- ¿Se debe agregar la validación de sesión del administrador, igual que
+  en el diagrama de corte?
+- El diagrama no representa el caso de fallo de notificación push (ver
+  ADR-0001) — evaluar si agregar un tercer flujo alternativo.
+
+## Entrada 6 — Trazabilidad
+
+**Objetivo:** Confirmar que cada entidad, regla y decisión del
+portafolio puede rastrearse hacia una necesidad explícita del PRD.
+
+**Herramienta/modelo:** Claude (Anthropic).
+
+**Salida obtenida:** Una tabla de trazabilidad cruzando necesidad →
+sección del PRD → modelo/diagrama → ADR, más una lista consolidada de
+todas las preguntas abiertas del portafolio en un solo lugar.
+
+**Problema detectado:** Ninguna entidad del ERD quedó sin justificar. Se
+identificó como brecha que solo existe un diagrama de secuencia para
+corte y no para reconexión al momento de la primera revisión —
+resuelto luego con la Entrada 5.
+
+**Cambio realizado:** Ninguno sobre el contenido técnico; se generó el
+artefacto de trazabilidad como evidencia de revisión cruzada.
+
+**Evidencia / preguntas abiertas remanentes:** Ver `TRAZABILIDAD.md`
+para el listado consolidado de las 7 preguntas abiertas del portafolio.
