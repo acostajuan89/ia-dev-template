@@ -8,7 +8,8 @@ registro de cortes y gestión de reconexiones de suministro de agua.
 **Herramienta/modelo:** Claude (Anthropic), usado como asistente de
 generación y auditoría conversacional.
 
-**Contexto proporcionado:** Hechos aprobados sobre el proceso de corte
+**Contexto proporcionado:** Hechos aprobados sobre el proceso de cortemkdir docs\architecture\diagrams
+New-Item docs\architecture\diagrams\erd.md
 (existencia de cuadrillas de campo, origen del corte por deuda impaga,
 necesidad de registrar reconexión post-pago), junto con restricciones
 explícitas de no inventar dispositivos, conectividad, motivos de no-corte,
@@ -51,3 +52,30 @@ porque no estaba en el contexto inicial).
 - ¿Qué patrón de integración usará la API que monitorea pagos
   (polling vs. evento)? — Pendiente de resolver en el ADR.
 
+## Entrada 2 — ERD: modelo de datos
+
+**Objetivo:** Traducir las entidades del PRD a un diagrama entidad-relación.
+
+**Herramienta/modelo:** Claude (Anthropic).
+
+**Salida obtenida:** Un primer ERD con las entidades principales del
+proceso de corte/reconexión (Suministro, Medidor, Orden de Corte,
+Registro de Corte, Ingreso a Depósito, Orden de Reconexión), pero sin
+ninguna entidad de usuarios o cuadrillas — los roles (cuadrillero,
+administrador, funcionario de depósito) quedaron como simples IDs sueltos
+sin entidad que los respalde.
+
+**Problema detectado:** Omisión real: la IA no había considerado que los
+distintos roles (personas) necesitan su propia entidad para ser
+consistente con el requisito de auditoría (usuario independiente por
+persona) y con el hecho de que las cuadrillas son equipos de 2-3 personas,
+no individuos sueltos.
+
+**Cambio realizado:** Se agregaron las entidades USUARIO, CUADRILLA y la
+tabla intermedia CUADRILLA_USUARIO, y se referenciaron correctamente desde
+ORDEN_CORTE, REGISTRO_CORTE, INGRESO_DEPOSITO y ORDEN_RECONEXION.
+
+**Preguntas abiertas remanentes:**
+- ¿El registro de corte debe diferenciar la persona específica de la
+  cuadrilla, o alcanza con registrar la cuadrilla como equipo?
+- ¿El estado del medidor se modela como campo simple o como historial?
