@@ -113,3 +113,40 @@ que sí está confirmado en el PRD.
 - ¿La validación de "pago con comprobante en el momento" requiere una
   llamada síncrona a facturación? — Pendiente de un segundo diagrama de
   secuencia si se confirma esta necesidad.
+
+## Entrada 4 — ADR: estrategia de detección de pagos
+
+**Objetivo:** Documentar la decisión técnica sobre cómo el sistema
+detecta los pagos confirmados para habilitar la reconexión el mismo día.
+
+**Herramienta/modelo:** Claude (Anthropic).
+
+**Contexto proporcionado:** Requisito no funcional del PRD (reconexión
+el mismo día del pago) y la pregunta abierta de la Sección 7 sobre el
+patrón de integración de la API que monitorea pagos.
+
+**Salida obtenida:** Un primer borrador de ADR con dos alternativas
+genéricas (polling vs. webhook/evento) y la decisión marcada como
+"pendiente de confirmación", ya que no se contaba con información real
+sobre la infraestructura existente de facturación.
+
+**Problema detectado:** El borrador inicial no podía tomar una decisión
+real porque le faltaba contexto operativo — no es un error de la IA,
+sino una laguna de información que solo el autor podía completar.
+
+**Cambio realizado:** Se incorporó información real y concreta: ya
+existe un script Python que hace polling cada 5 minutos sobre la tabla
+de pagos, y se decidió integrar Firebase Cloud Messaging (FCM) para
+notificar al administrador de cuadrilla. Con esto, el ADR pasó de
+"decisión pendiente" a "decisión aceptada", reutilizando infraestructura
+existente en lugar de proponer algo nuevo desde cero. También se
+documentó honestamente que, ante fallo de la notificación push, hoy no
+existe mecanismo automatizado de respaldo (solo comunicación personal
+directa) — un riesgo operativo real, no inventado, que se dejó explícito
+en vez de asumir que "no pasaría".
+
+**Evidencia / preguntas abiertas remanentes:**
+- Prototipo de integración entre el script Python existente y Firebase
+  Cloud Messaging, pendiente de implementar.
+- Sin mecanismo automatizado de respaldo ante fallos de notificación —
+  riesgo aceptado para la v1, a revisar en el futuro.
