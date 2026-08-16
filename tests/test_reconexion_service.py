@@ -6,13 +6,15 @@ Cubre las dos reglas de negocio confirmadas en el PRD/ADR-0001:
     1. Suministro "cortado" -> se genera la reconexión.
     2. Suministro "asignado" (corte no efectivizado) -> se anula
        la orden de corte.
-
-Nota: este archivo se escribe ANTES de que exista la implementación
-(app/services/reconexion_service.py). Al ejecutar pytest ahora, debe
-FALLAR por ImportError — esa es la Pantalla Roja esperada.
 """
-from app.services.reconexion_service import ReconexionService
+import pytest
+from pydantic import ValidationError
+
 from app.schemas.reconexion import PagoNotificadoRequest
+from app.services.reconexion_service import (
+    ReconexionService,
+    SuministroNoEncontradoError,
+)
 from tests.mocks.fake_reconexion_repository import FakeReconexionRepository
 
 
@@ -62,14 +64,7 @@ def test_anula_orden_corte_cuando_suministro_esta_asignado() -> None:
     assert repo.reconexion_creada is False
 
 
-
 # ─── Casos borde ──────────────────────────────────────────────────────
-import pytest
-from pydantic import ValidationError
-
-from app.services.reconexion_service import SuministroNoEncontradoError
-
-
 def test_lanza_error_cuando_cuenta_no_existe() -> None:
     # Arrange
     repo = FakeReconexionRepository(
@@ -114,22 +109,23 @@ def test_contrato_rechaza_comprobante_vacio() -> None:
             nro_comprobante="",
             identificador_cuenta="CTA-001",
         )
+
+
 # ─── Test corregido (antes: falsa confianza, U2.3) ────────────────────
-def test_procesar_pago_genera_reconexion_SIN_MOCK_EXCESIVO() -> None:
+def test_procesar_pago_genera_reconexion_sin_mock_excesivo() -> None:
     """
-    ✅ VERSIÓN CORREGIDA de test_procesar_pago_genera_reconexion_MOCK_EXCESIVO.
+    VERSION CORREGIDA de un test que originalmente mockeaba el propio
+    metodo bajo prueba (procesar_pago), forzando su valor de retorno.
+    Esto hacia que el assert comparara el mock contra si mismo — la
+    logica real nunca se ejecutaba.
 
-    Diagnóstico del problema original: el test parcheaba
-    (`patch.object`) el propio método bajo prueba (`procesar_pago`),
-    forzando su valor de retorno. Esto hacía que el assert comparara
-    el mock contra sí mismo — la lógica real nunca se ejecutaba.
-    Se demostró rompiendo deliberadamente ReconexionService.procesar_pago
-    y confirmando que el test seguía en verde (ver historial de commits).
+    Se demostro rompiendo deliberadamente
+    ReconexionService.procesar_pago y confirmando que el test alucinado
+    seguia en verde (ver historial de commits).
 
-    Corrección: se eliminó el patch.object sobre el método bajo prueba.
-    Se usa el FakeReconexionRepository (ya existente) SOLO para aislar
-    la persistencia — la lógica real de decisión (cortado -> reconexión)
-    se ejecuta sin mockear.
+    Correccion: se elimino el patch.object sobre el metodo bajo prueba.
+    Se usa el FakeReconexionRepository SOLO para aislar la persistencia
+    la logica real de decision se ejecuta sin mockear.
     """
     repo = FakeReconexionRepository(
         suministro_estado="cortado",

@@ -11,10 +11,10 @@ Fuera de alcance en este Lab 3: caso de identificador_cuenta sin
 suministro asociado (bandeja de verificación, de solo lectura).
 """
 from app.schemas.reconexion import (
+    AnulacionCorteResponse,
     PagoNotificadoRequest,
     PagoProcesadoResponse,
     ReconexionResponse,
-    AnulacionCorteResponse,
 )
 
 

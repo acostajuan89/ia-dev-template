@@ -6,16 +6,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
+from app.routers.reconexion_router import router as reconexion_router
+
 # Carga variables de entorno desde .env (no falla si .env no existe)
 load_dotenv()
-
 # Metadatos para la documentación automática (OpenAPI)
 app = FastAPI(
     title="AI Diplomado API",
     description="API Backend para el Diplomado de IA Aplicada a Ingeniería de Software",
     version="0.1.0",
 )
-
 # Configuración de CORS — orígenes explícitos para no romper el spec de browsers.
 # El spec CORS prohíbe `allow_origins=["*"]` cuando `allow_credentials=True`.
 # Si necesitás agregar otro frontend, sumalo a esta lista o usá CORS_ORIGINS en .env.
@@ -28,7 +28,6 @@ _default_origins = [
 ]
 _env_origins = os.getenv("CORS_ORIGINS", "")
 _origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or _default_origins
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
@@ -42,13 +41,11 @@ app.add_middleware(
 class HealthResponse(BaseModel):
     """
     Esquema de respuesta del health check.
-
     Nota pedagógica: usamos `min_length=1` para mostrar el patrón de
     validación con Pydantic Field. Un string vacío en un health check
     es señal de que algo se rompió en la serialización — preferimos
     fallar fuerte que reportar "status OK" con valor vacío.
     """
-
     status: str = Field(min_length=1)
     version: str = Field(min_length=1, pattern=r"^\d+\.\d+\.\d+$")
     module: str = Field(min_length=1)
@@ -70,7 +67,5 @@ async def health_check() -> HealthResponse:
         module="System",
     )
 
-
-from app.routers.reconexion_router import router as reconexion_router
 
 app.include_router(reconexion_router)
