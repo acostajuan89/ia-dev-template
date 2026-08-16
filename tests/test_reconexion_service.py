@@ -60,3 +60,57 @@ def test_anula_orden_corte_cuando_suministro_esta_asignado() -> None:
     assert result.accion == "anulacion"
     assert repo.orden_corte_anulada is True
     assert repo.reconexion_creada is False
+
+
+
+# ─── Casos borde ──────────────────────────────────────────────────────
+import pytest
+from pydantic import ValidationError
+
+from app.services.reconexion_service import SuministroNoEncontradoError
+
+
+def test_lanza_error_cuando_cuenta_no_existe() -> None:
+    # Arrange
+    repo = FakeReconexionRepository(
+        suministro_estado="cortado",
+        identificador_cuenta="CTA-001",
+    )
+    service = ReconexionService(repository=repo)
+
+    # Act / Assert
+    with pytest.raises(SuministroNoEncontradoError):
+        service.procesar_pago(
+            PagoNotificadoRequest(
+                nro_comprobante="COMP-999",
+                identificador_cuenta="CTA-INEXISTENTE",
+            )
+        )
+
+
+def test_lanza_error_cuando_estado_no_es_soportado() -> None:
+    # Arrange: suministro en un estado que no es "cortado" ni "asignado"
+    repo = FakeReconexionRepository(
+        suministro_estado="reconectado",
+        identificador_cuenta="CTA-003",
+    )
+    service = ReconexionService(repository=repo)
+
+    # Act / Assert
+    with pytest.raises(ValueError):
+        service.procesar_pago(
+            PagoNotificadoRequest(
+                nro_comprobante="COMP-789",
+                identificador_cuenta="CTA-003",
+            )
+        )
+
+
+def test_contrato_rechaza_comprobante_vacio() -> None:
+    # Este caso prueba el CONTRATO (Pydantic), no el Service.
+    # Un nro_comprobante vacío debe rechazarse antes de llegar al Service.
+    with pytest.raises(ValidationError):
+        PagoNotificadoRequest(
+            nro_comprobante="",
+            identificador_cuenta="CTA-001",
+        )
