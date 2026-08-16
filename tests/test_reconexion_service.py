@@ -114,3 +114,35 @@ def test_contrato_rechaza_comprobante_vacio() -> None:
             nro_comprobante="",
             identificador_cuenta="CTA-001",
         )
+# ─── Test corregido (antes: falsa confianza, U2.3) ────────────────────
+def test_procesar_pago_genera_reconexion_SIN_MOCK_EXCESIVO() -> None:
+    """
+    ✅ VERSIÓN CORREGIDA de test_procesar_pago_genera_reconexion_MOCK_EXCESIVO.
+
+    Diagnóstico del problema original: el test parcheaba
+    (`patch.object`) el propio método bajo prueba (`procesar_pago`),
+    forzando su valor de retorno. Esto hacía que el assert comparara
+    el mock contra sí mismo — la lógica real nunca se ejecutaba.
+    Se demostró rompiendo deliberadamente ReconexionService.procesar_pago
+    y confirmando que el test seguía en verde (ver historial de commits).
+
+    Corrección: se eliminó el patch.object sobre el método bajo prueba.
+    Se usa el FakeReconexionRepository (ya existente) SOLO para aislar
+    la persistencia — la lógica real de decisión (cortado -> reconexión)
+    se ejecuta sin mockear.
+    """
+    repo = FakeReconexionRepository(
+        suministro_estado="cortado",
+        identificador_cuenta="CTA-001",
+    )
+    service = ReconexionService(repository=repo)
+
+    result = service.procesar_pago(
+        PagoNotificadoRequest(
+            nro_comprobante="COMP-123",
+            identificador_cuenta="CTA-001",
+        )
+    )
+
+    assert result.accion == "reconexion"
+    assert repo.reconexion_creada is True
