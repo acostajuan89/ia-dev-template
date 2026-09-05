@@ -1,15 +1,10 @@
 """
-app/services/ai_client.py — Cliente de IA vendor-agnostic (Proyecto Final M4).
+app/services/ai_client.py — Cliente de IA vendor-agnostic.
 
-Define un contrato (Protocol) que la aplicación consume, independiente
-del proveedor real detrás. Actualmente implementado con un adapter
-compatible con OpenAI Chat Completions, que funciona tanto contra el
-Mock LLM local (MOCK_MODE=true) como contra OpenAI real.
-
-Sigue el patrón "Vendor-Agnostic LLM" del material M4:
-    - El Contrato: interfaz que la app espera consumir (AIClient).
-    - Los Adapters: clases traductoras para cada proveedor.
-    - El Trade-off: cambiar de proveedor exige reevaluar calidad y costos.
+Define un contrato (Protocol) que la aplicacion consume, independiente
+del proveedor real detras. Implementado con un adapter compatible con
+OpenAI Chat Completions, que funciona tanto contra el Mock LLM local
+(MOCK_MODE=true) como contra OpenAI real.
 """
 from __future__ import annotations
 
@@ -23,7 +18,6 @@ from openai import (
     OpenAI,
     RateLimitError,
 )
-
 
 class AIIntegrationError(Exception):
     """Error de conexión, configuración o infraestructura con el proveedor de IA."""
@@ -87,5 +81,11 @@ class OpenAICompatibleAdapter:
 
 
 def get_ai_client() -> AIClient:
-    """Factory: devuelve el adapter configurado según variables de entorno."""
+    """Factory: devuelve el adapter configurado segun variables de entorno."""
+    provider = os.environ.get("AI_PROVIDER", "openai").lower()
+
+    if provider == "anthropic":
+        from app.services.anthropic_adapter import AnthropicAdapter
+        return AnthropicAdapter()
+
     return OpenAICompatibleAdapter()
