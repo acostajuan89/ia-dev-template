@@ -1,9 +1,8 @@
 """
-app/services/agente_cyr_service.py — Orquestación del Agente CyR.
+app/services/agente_cyr_service.py — Orquestacion del Agente CyR.
 
-Conecta el AIClient (integración) con el contrato RespuestaAgenteCyR
+Conecta el AIClient (integracion) con el contrato RespuestaAgenteCyR
 (estructura), forzando al modelo a responder en JSON validable.
-Proyecto Final M4 - TG2 (salida estructurada).
 """
 from __future__ import annotations
 

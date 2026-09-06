@@ -1,6 +1,6 @@
 """
 app/schemas/agente_cyr.py — Contrato de salida estructurada para el
-Agente CyR (Corte y Reconexión). Proyecto Final M4/M5.
+Agente CyR (Corte y Reconexion).
 
 Obliga al modelo a declarar sus fuentes y si tuvo evidencia suficiente,
 en vez de responder con texto libre sin trazabilidad.
