@@ -33,14 +33,20 @@ SYSTEM_INSTRUCTIONS = (
 
 def parse_respuesta_cyr(raw_text: str) -> RespuestaAgenteCyR:
     """Convierte el texto crudo del modelo en un objeto validado."""
+    texto_limpio = raw_text.strip()
+    if texto_limpio.startswith("```"):
+        texto_limpio = texto_limpio.strip("`")
+        if texto_limpio.startswith("json"):
+            texto_limpio = texto_limpio[4:]
+        texto_limpio = texto_limpio.strip()
+
     try:
-        data = json.loads(raw_text)
+        data = json.loads(texto_limpio)
         return RespuestaAgenteCyR.model_validate(data)
     except (json.JSONDecodeError, ValidationError) as exc:
         raise InvalidModelOutputError(
             f"La respuesta del modelo no cumple el contrato: {exc}"
         ) from exc
-
 
 def consultar_agente_cyr(pregunta: str, client: AIClient) -> RespuestaAgenteCyR:
     """Función principal: pregunta -> respuesta estructurada y validada."""
