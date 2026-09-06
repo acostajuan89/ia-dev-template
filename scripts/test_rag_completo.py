@@ -20,3 +20,12 @@ resultado = answer_question(pregunta, retriever, client)
 print(f"Respuesta: {resultado.respuesta}")
 print(f"Fuentes utilizadas: {resultado.fuentes_utilizadas}")
 print(f"Estado evidencia: {resultado.estado_evidencia}")
+
+print("\n\n=== Pregunta trampa (no deberia estar en la documentacion) ===")
+pregunta_trampa = "¿Cuál es la política de contracargos internacionales?"
+print(f"Pregunta: {pregunta_trampa}\n")
+
+resultado_trampa = answer_question(pregunta_trampa, retriever, client)
+print(f"Respuesta: {resultado_trampa.respuesta}")
+print(f"Fuentes utilizadas: {resultado_trampa.fuentes_utilizadas}")
+print(f"Estado evidencia: {resultado_trampa.estado_evidencia}")
