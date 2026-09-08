@@ -19,6 +19,7 @@ from openai import (
     RateLimitError,
 )
 
+
 class AIIntegrationError(Exception):
     """Error de conexión, configuración o infraestructura con el proveedor de IA."""
     pass
