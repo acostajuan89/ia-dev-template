@@ -8,10 +8,13 @@ responder solo con evidencia de la base de conocimiento.
 from __future__ import annotations
 
 from app.schemas.agente_cyr import RespuestaAgenteCyR
+from app.services.agent_logger import log_step
 from app.services.agente_cyr_service import parse_respuesta_cyr
 from app.services.ai_client import AIClient
 from app.services.retriever import SimpleRetriever
 
+# Baranda SCOPE: restringe el dominio de respuesta y prohibe inventar
+# fuera de los documentos recuperados.
 SYSTEM_INSTRUCTIONS_RAG = (
     "Sos el Agente CyR (Corte y Reconexion) de ESSAP. "
     "Tu unico proposito es responder preguntas sobre el proceso de corte "
@@ -58,4 +61,14 @@ def answer_question(
         user_message=user_message,
     )
 
-    return parse_respuesta_cyr(raw)
+    resultado = parse_respuesta_cyr(raw)
+
+    # Registro auditable (equivalente a logger.py del template del curso)
+    log_step(
+        question=question,
+        sources_found=[doc["source"] for doc in docs],
+        estado_evidencia=resultado.estado_evidencia,
+        respuesta_preview=resultado.respuesta,
+    )
+
+    return resultado
