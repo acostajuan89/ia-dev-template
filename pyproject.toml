@@ -54,6 +54,15 @@ ignore_missing_imports = true
 warn_return_any = true
 warn_unused_configs = true
 
+[[tool.mypy.overrides]]
+module = "openai.*"
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = "anthropic.*"
+follow_imports = "skip"
+
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
