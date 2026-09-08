@@ -67,6 +67,10 @@ class OpenAICompatibleAdapter:
                     {"role": "user", "content": user_message},
                 ],
                 temperature=0.0,
+                 # Baranda BUDGET: limite de tokens de salida por respuesta.
+                 # Misma logica que en AnthropicAdapter — arquitectura de un
+                 # solo ciclo retrieve->generate, no un loop iterativo.
+                 max_tokens=1024,
             )
         except AuthenticationError as exc:
             raise AIConfigurationError(

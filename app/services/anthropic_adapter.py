@@ -38,6 +38,11 @@ class AnthropicAdapter:
         try:
             response = self._client.messages.create(
                 model=self._model,
+                # Baranda BUDGET: limite de tokens de salida por respuesta.
+                # Nuestra arquitectura usa un unico ciclo retrieve->generate
+                # (no un loop iterativo con MAX_STEPS como en otros disenos
+                # de agente); el limite de presupuesto aqui se aplica al
+                # tamano maximo de cada respuesta generada.
                 max_tokens=1024,
                 system=system_instructions,
                 messages=[{"role": "user", "content": user_message}],
